@@ -66,10 +66,10 @@ const BENEFITS = [
 
 const ACTIONS = [
   { to: "/signup", label: "Join Now", primary: true },
-  { to: "/membership", label: "Membership Plans" },
-  { to: "/ai-assistant", label: "AI Fitness Assistant" },
-  { to: "/accessibility", label: "Accessibility" },
-  { to: "/signin", label: "Sign In" },
+  { to: "/membership", label: "Membership Plans", primary: false },
+  { to: "/ai-assistant", label: "AI Fitness Assistant", primary: false },
+  { to: "/accessibility", label: "Accessibility", primary: false },
+  { to: "/signin", label: "Sign In", primary: false },
 ] as const;
 
 function Home() {
