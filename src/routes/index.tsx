@@ -139,13 +139,13 @@ function useTasks() {
 function categoryBadgeColor(category: Category) {
   switch (category) {
     case "Personal":
-      return "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200";
+      return "bg-category-personal-bg text-category-personal-text";
     case "Work":
-      return "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-200";
+      return "bg-category-work-bg text-category-work-text";
     case "Shopping":
-      return "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-200";
+      return "bg-category-shopping-bg text-category-shopping-text";
     case "Health":
-      return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200";
+      return "bg-category-health-bg text-category-health-text";
     default:
       return "bg-muted text-muted-foreground";
   }
