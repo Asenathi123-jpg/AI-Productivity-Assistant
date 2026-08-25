@@ -1,410 +1,163 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
-import {
-  CheckCircle2,
-  Circle,
-  LayoutList,
-  ListTodo,
-  Moon,
-  Plus,
-  Sun,
-  Trash2,
+  Accessibility,
+  Bot,
+  HeartPulse,
+  LineChart,
+  Sparkles,
+  Users,
+  UserCheck,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "BlueTask — Calm Task Management" },
-      { name: "description", content: "A minimal, calming blue task manager for organizing daily work." },
-      { property: "og:title", content: "BlueTask — Calm Task Management" },
-      { property: "og:description", content: "A minimal, calming blue task manager for organizing daily work." },
+      { title: "Outbound Fitness — Move Beyond Limits. Fitness for Everyone." },
+      {
+        name: "description",
+        content:
+          "An inclusive gym where everyone can exercise, receive support and achieve their fitness goals. Accessible memberships, AI fitness assistance and personalised workouts.",
+      },
+      { property: "og:title", content: "Outbound Fitness — Fitness for Everyone" },
+      {
+        property: "og:description",
+        content:
+          "An inclusive, accessible gym with AI fitness assistance, personalised workouts and supportive staff.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Index,
+  component: Home,
 });
 
-const CATEGORIES = ["Personal", "Work", "Shopping", "Health"] as const;
-type Category = (typeof CATEGORIES)[number];
+const BENEFITS = [
+  {
+    icon: Users,
+    title: "Inclusive gym environment",
+    text: "Everyone trains together in a space built for all abilities.",
+  },
+  {
+    icon: Accessibility,
+    title: "Accessible fitness support",
+    text: "Audio instructions, tactile guidance and accessible equipment.",
+  },
+  {
+    icon: HeartPulse,
+    title: "Personalised workouts",
+    text: "Plans that match your goal, experience and access needs.",
+  },
+  {
+    icon: Bot,
+    title: "AI fitness assistance",
+    text: "Ask questions any time and get clear, step-by-step answers.",
+  },
+  {
+    icon: UserCheck,
+    title: "Supportive staff",
+    text: "Trained team members ready to assist whenever you ask.",
+  },
+  {
+    icon: LineChart,
+    title: "Progress tracking",
+    text: "Log your sessions and see how far you have moved.",
+  },
+];
 
-interface Task {
-  id: string;
-  title: string;
-  category: Category;
-  completed: boolean;
-  createdAt: number;
-}
+const ACTIONS = [
+  { to: "/signup", label: "Join Now", primary: true },
+  { to: "/membership", label: "Membership Plans", primary: false },
+  { to: "/ai-assistant", label: "AI Fitness Assistant", primary: false },
+  { to: "/accessibility", label: "Accessibility", primary: false },
+  { to: "/signin", label: "Sign In", primary: false },
+] as const;
 
-type Filter = "all" | Category | "completed";
-
-const STORAGE_KEY = "bluetask-tasks";
-const THEME_KEY = "bluetask-theme";
-
-function generateId() {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
-function useTheme() {
-  const [dark, setDark] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const stored = typeof window !== "undefined" ? window.localStorage.getItem(THEME_KEY) : null;
-    const prefersDark =
-      stored === null && typeof window !== "undefined"
-        ? window.matchMedia("(prefers-color-scheme: dark)").matches
-        : false;
-    const isDark = stored ? stored === "dark" : prefersDark;
-    setDark(isDark);
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
-
-  const toggle = () => {
-    const next = !dark;
-    setDark(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    localStorage.setItem(THEME_KEY, next ? "dark" : "light");
-  };
-
-  return { dark, toggle, mounted };
-}
-
-function useTasks() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Task[];
-        setTasks(parsed);
-      }
-    } catch {
-      // ignore corrupt storage
-    }
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (loaded) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-    }
-  }, [tasks, loaded]);
-
-  const addTask = (title: string, category: Category) => {
-    const trimmed = title.trim();
-    if (!trimmed) return;
-    setTasks((prev) => [
-      ...prev,
-      { id: generateId(), title: trimmed, category, completed: false, createdAt: Date.now() },
-    ]);
-  };
-
-  const toggleTask = (id: string) => {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
-    );
-  };
-
-  const deleteTask = (id: string) => {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
-  };
-
-  return { tasks, addTask, toggleTask, deleteTask, loaded };
-}
-
-function categoryBadgeColor(category: Category) {
-  switch (category) {
-    case "Personal":
-      return "bg-category-personal-bg text-category-personal-text";
-    case "Work":
-      return "bg-category-work-bg text-category-work-text";
-    case "Shopping":
-      return "bg-category-shopping-bg text-category-shopping-text";
-    case "Health":
-      return "bg-category-health-bg text-category-health-text";
-    default:
-      return "bg-muted text-muted-foreground";
-  }
-}
-
-function Index() {
-  const { tasks, addTask, toggleTask, deleteTask, loaded } = useTasks();
-  const { dark, toggle: toggleTheme, mounted } = useTheme();
-  const [newTask, setNewTask] = useState("");
-  const [category, setCategory] = useState<Category>("Personal");
-  const [filter, setFilter] = useState<Filter>("all");
-
-  const filteredTasks = useMemo(() => {
-    if (filter === "all") return tasks;
-    if (filter === "completed") return tasks.filter((t) => t.completed);
-    return tasks.filter((t) => t.category === filter);
-  }, [tasks, filter]);
-
-  const completedCount = tasks.filter((t) => t.completed).length;
-  const progress = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
-
-  const handleAdd = (e: React.FormEvent) => {
-    e.preventDefault();
-    addTask(newTask, category);
-    setNewTask("");
-  };
-
-  const counts = useMemo(() => {
-    const c: Record<Filter, number> = {
-      all: tasks.length,
-      completed: tasks.filter((t) => t.completed).length,
-      Personal: tasks.filter((t) => t.category === "Personal").length,
-      Work: tasks.filter((t) => t.category === "Work").length,
-      Shopping: tasks.filter((t) => t.category === "Shopping").length,
-      Health: tasks.filter((t) => t.category === "Health").length,
-    };
-    return c;
-  }, [tasks]);
-
-  const filters: { label: string; value: Filter }[] = [
-    { label: "All", value: "all" },
-    ...CATEGORIES.map((c) => ({ label: c, value: c as Filter })),
-    { label: "Completed", value: "completed" },
-  ];
-
-  // Prevent hydration mismatch by rendering a stable shell before mount.
-  if (!mounted || !loaded) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-pulse rounded-full bg-primary/20" />
-      </div>
-    );
-  }
-
+function Home() {
   return (
-    <div className="min-h-screen bg-background px-4 py-8 text-foreground sm:py-12">
-      <div className="mx-auto max-w-2xl">
-        <header className="mb-8 flex items-start justify-between gap-4 sm:mb-10">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <ListTodo className="h-5 w-5" />
-              </div>
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                BlueTask
-              </h1>
-            </div>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Stay organized, one calm step at a time.
-            </p>
-          </div>
+    <div>
+      <section className="border-b-2 border-border bg-primary px-4 py-14 text-primary-foreground sm:py-20">
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="inline-flex items-center gap-2 rounded-full bg-gold px-4 py-1.5 text-sm font-semibold text-gold-foreground">
+            <Sparkles className="size-4" aria-hidden="true" />
+            Inclusive gym · Cape Town
+          </p>
+          <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-6xl">OUTBOUND FITNESS</h1>
+          <p className="mt-4 text-xl font-semibold sm:text-2xl">
+            “Move Beyond Limits. Fitness for Everyone.”
+          </p>
+          <p className="mx-auto mt-5 max-w-2xl text-lg">
+            An inclusive gym where everyone can exercise, receive support and achieve their fitness
+            goals.
+          </p>
 
-          <div
-            className="flex items-center gap-2 rounded-full border border-border bg-card p-1.5 pl-3 text-sm font-medium shadow-sm"
-          >
-            <span className="hidden sm:inline text-muted-foreground">{dark ? "Dark" : "Light"}</span>
-            {dark ? <Moon className="h-4 w-4 text-muted-foreground" /> : <Sun className="h-4 w-4 text-muted-foreground" />}
-            <Switch
-              checked={dark}
-              onCheckedChange={toggleTheme}
-              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-              className="ml-1 data-[state=unchecked]:bg-input"
-            />
-          </div>
-        </header>
-
-        <section className="mb-6 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Progress
-              </p>
-              <p className="text-2xl font-semibold text-foreground">
-                {completedCount}
-                <span className="text-base font-normal text-muted-foreground">
-                  {" "}
-                  / {tasks.length} completed
-                </span>
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-3xl font-semibold text-primary">{progress}%</p>
-            </div>
-          </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
-            <div
-              className="h-full rounded-full bg-primary transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </section>
-
-        <form
-          onSubmit={handleAdd}
-          className="mb-6 flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm sm:flex-row sm:items-center"
-        >
-          <Input
-            placeholder="What needs to be done?"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            className="h-11 flex-1 border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-primary"
-          />
-          <div className="flex items-center gap-3">
-            <Select
-              value={category}
-              onValueChange={(v) => setCategory(v as Category)}
-            >
-              <SelectTrigger className="h-11 w-full border-border bg-background sm:w-36">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CATEGORIES.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              type="submit"
-              className="h-11 gap-1 bg-primary text-primary-foreground hover:bg-primary/90"
-              disabled={!newTask.trim()}
-            >
-              <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">Add</span>
-            </Button>
-          </div>
-        </form>
-
-        <div className="mb-6 flex flex-wrap gap-2">
-          {filters.map((f) => {
-            const active = filter === f.value;
-            return (
-              <button
-                key={f.value}
-                onClick={() => setFilter(f.value)}
-                className={cn(
-                  "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground border border-border",
-                )}
-              >
-                {f.label}
-                <span
-                  className={cn(
-                    "ml-1.5 rounded-full px-1.5 py-0.5 text-xs",
-                    active
-                      ? "bg-primary-foreground/20 text-primary-foreground"
-                      : "bg-secondary text-secondary-foreground",
-                  )}
+          <ul className="mt-9 flex flex-wrap justify-center gap-3">
+            {ACTIONS.map((a) => (
+              <li key={a.to}>
+                <Link
+                  to={a.to}
+                  className={
+                    a.primary
+                      ? "inline-flex min-h-14 items-center rounded-xl bg-gold px-7 text-lg font-bold text-gold-foreground hover:opacity-90"
+                      : "inline-flex min-h-14 items-center rounded-xl border-2 border-primary-foreground bg-card px-6 text-lg font-semibold text-card-foreground hover:bg-accent hover:text-accent-foreground"
+                  }
                 >
-                  {counts[f.value]}
-                </span>
-              </button>
-            );
-          })}
+                  {a.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
+      </section>
 
-        <div className="space-y-3">
-          {filteredTasks.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card py-14 text-center shadow-sm">
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                {filter === "completed" ? (
-                  <CheckCircle2 className="h-6 w-6" />
-                ) : (
-                  <LayoutList className="h-6 w-6" />
-                )}
-              </div>
-              <p className="text-base font-medium text-foreground">
-                {filter === "completed"
-                  ? "No completed tasks yet"
-                  : filter === "all"
-                    ? "No tasks yet"
-                    : `No ${filter} tasks`}
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {filter === "completed"
-                  ? "Finish a task and it will appear here."
-                  : "Add your first task above to get started."}
-              </p>
-            </div>
-          ) : (
-            filteredTasks.map((task) => (
-              <div
-                key={task.id}
-                className={cn(
-                  "group flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm transition-all hover:shadow-md",
-                  task.completed && "opacity-70",
-                )}
-              >
-                <Checkbox
-                  checked={task.completed}
-                  onCheckedChange={() => toggleTask(task.id)}
-                  className="mt-0.5"
-                  aria-label={task.completed ? "Mark incomplete" : "Mark complete"}
-                />
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={cn(
-                      "truncate text-sm font-medium text-foreground transition-all",
-                      task.completed && "text-muted-foreground line-through",
-                    )}
-                  >
-                    {task.title}
-                  </p>
-                  <div className="mt-1.5 flex items-center gap-2">
-                    <span
-                      className={cn(
-                        "rounded-md px-2 py-0.5 text-xs font-medium",
-                        categoryBadgeColor(task.category),
-                      )}
-                    >
-                      {task.category}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(task.createdAt).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => deleteTask(task.id)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground opacity-0 transition-all hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 focus:opacity-100"
-                  aria-label="Delete task"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            ))
-          )}
+      <section className="mx-auto max-w-6xl px-4 py-14" aria-labelledby="benefits-heading">
+        <h2 id="benefits-heading" className="text-3xl font-bold text-foreground">
+          What you get at Outbound Fitness
+        </h2>
+        <p className="mt-2 max-w-2xl text-muted-foreground">
+          Six things every member receives, whatever your ability or experience level.
+        </p>
+
+        <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {BENEFITS.map(({ icon: Icon, title, text }) => (
+            <li
+              key={title}
+              className="rounded-2xl border-2 border-border bg-card p-6 text-card-foreground"
+            >
+              <span className="flex size-12 items-center justify-center rounded-xl bg-teal text-teal-foreground">
+                <Icon className="size-6" aria-hidden="true" />
+              </span>
+              <h3 className="mt-4 text-xl font-semibold">{title}</h3>
+              <p className="mt-2 text-muted-foreground">{text}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-6" aria-labelledby="start-heading">
+        <div className="rounded-2xl border-2 border-border bg-card p-7">
+          <h2 id="start-heading" className="text-2xl font-bold text-foreground">
+            Ready to start?
+          </h2>
+          <p className="mt-2 max-w-2xl text-muted-foreground">
+            Registration takes five short steps. Tell us how you would like to use the gym and we
+            will set the app up to suit you.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link
+              to="/signup"
+              className="inline-flex min-h-13 items-center rounded-xl bg-primary px-6 py-3 text-lg font-semibold text-primary-foreground hover:opacity-90"
+            >
+              Start registration
+            </Link>
+            <Link
+              to="/workouts"
+              className="inline-flex min-h-13 items-center rounded-xl border-2 border-border px-6 py-3 text-lg font-semibold text-foreground hover:bg-accent"
+            >
+              Try the AI Workout Planner
+            </Link>
+          </div>
         </div>
-
-        <footer className="mt-10 text-center text-xs text-muted-foreground">
-          <p>BlueTask — your calm, organized day starts here.</p>
-        </footer>
-      </div>
+      </section>
     </div>
   );
 }
