@@ -218,19 +218,18 @@ function Index() {
             </p>
           </div>
 
-          <button
-            onClick={toggleTheme}
-            className="flex items-center gap-2 rounded-full border border-border bg-card p-1.5 pl-3 text-sm font-medium shadow-sm transition-colors hover:bg-accent"
-            aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+          <div
+            className="flex items-center gap-2 rounded-full border border-border bg-card p-1.5 pl-3 text-sm font-medium shadow-sm"
           >
-            <span className="hidden sm:inline">{dark ? "Dark" : "Light"}</span>
-            {dark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            <span className="hidden sm:inline text-muted-foreground">{dark ? "Dark" : "Light"}</span>
+            {dark ? <Moon className="h-4 w-4 text-muted-foreground" /> : <Sun className="h-4 w-4 text-muted-foreground" />}
             <Switch
               checked={dark}
               onCheckedChange={toggleTheme}
+              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
               className="ml-1 data-[state=unchecked]:bg-input"
             />
-          </button>
+          </div>
         </header>
 
         <section className="mb-6 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
