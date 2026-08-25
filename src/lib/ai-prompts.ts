@@ -13,9 +13,9 @@ Safety and responsibility rules (never break these):
 
 export function assistantSystemPrompt(opts: {
   visuallyImpaired: boolean;
-  name?: string;
-  plan?: string;
-  goals?: string[];
+  name?: string | undefined;
+  plan?: string | undefined;
+  goals?: string[] | undefined;
 }) {
   return `You are the Outbound AI Fitness Assistant for Outbound Fitness, an inclusive South African gym whose motto is "Move Beyond Limits. Fitness for Everyone."
 
