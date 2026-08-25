@@ -140,6 +140,14 @@
   --sidebar-accent-foreground: oklch(0.95 0.02 245);
   --sidebar-border: oklch(0.3 0.04 250 / 60%);
   --sidebar-ring: oklch(0.65 0.14 245);
+  --category-personal-bg: oklch(0.3 0.05 250 / 0.4);
+  --category-personal-text: oklch(0.8 0.06 250);
+  --category-work-bg: oklch(0.3 0.05 270 / 0.4);
+  --category-work-text: oklch(0.8 0.06 270);
+  --category-shopping-bg: oklch(0.3 0.05 190 / 0.4);
+  --category-shopping-text: oklch(0.8 0.06 190);
+  --category-health-bg: oklch(0.3 0.05 160 / 0.4);
+  --category-health-text: oklch(0.8 0.06 160);
 }
 
 @layer base {
