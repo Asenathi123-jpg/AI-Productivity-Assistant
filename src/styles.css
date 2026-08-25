@@ -97,6 +97,14 @@
   --sidebar-accent-foreground: oklch(0.32 0.06 250);
   --sidebar-border: oklch(0.88 0.04 245);
   --sidebar-ring: oklch(0.55 0.16 250);
+  --category-personal-bg: oklch(0.93 0.04 250);
+  --category-personal-text: oklch(0.45 0.12 250);
+  --category-work-bg: oklch(0.92 0.05 270);
+  --category-work-text: oklch(0.4 0.12 270);
+  --category-shopping-bg: oklch(0.93 0.04 190);
+  --category-shopping-text: oklch(0.42 0.1 190);
+  --category-health-bg: oklch(0.93 0.04 160);
+  --category-health-text: oklch(0.4 0.1 160);
 }
 
 .dark {
