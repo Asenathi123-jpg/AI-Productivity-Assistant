@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
 import { Route as MembershipRouteImport } from './routes/membership'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SignupRouteImport } from './routes/signup'
@@ -18,6 +19,11 @@ import { Route as WorkoutsRouteImport } from './routes/workouts'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiAssistantRoute = AiAssistantRouteImport.update({
+  id: '/ai-assistant',
+  path: '/ai-assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MembershipRoute = MembershipRouteImport.update({
@@ -43,6 +49,7 @@ const WorkoutsRoute = WorkoutsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-assistant': typeof AiAssistantRoute
   '/membership': typeof MembershipRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai-assistant': typeof AiAssistantRoute
   '/membership': typeof MembershipRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-assistant': typeof AiAssistantRoute
   '/membership': typeof MembershipRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -65,14 +74,24 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/membership' | '/signin' | '/signup' | '/workouts'
+  fullPaths:
+    '/' | '/ai-assistant' | '/membership' | '/signin' | '/signup' | '/workouts'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/membership' | '/signin' | '/signup' | '/workouts'
-  id: '__root__' | '/' | '/membership' | '/signin' | '/signup' | '/workouts'
+  to:
+    '/' | '/ai-assistant' | '/membership' | '/signin' | '/signup' | '/workouts'
+  id:
+    | '__root__'
+    | '/'
+    | '/ai-assistant'
+    | '/membership'
+    | '/signin'
+    | '/signup'
+    | '/workouts'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiAssistantRoute: typeof AiAssistantRoute
   MembershipRoute: typeof MembershipRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
@@ -86,6 +105,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-assistant': {
+      id: '/ai-assistant'
+      path: '/ai-assistant'
+      fullPath: '/ai-assistant'
+      preLoaderRoute: typeof AiAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/membership': {
@@ -121,6 +147,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiAssistantRoute: AiAssistantRoute,
   MembershipRoute: MembershipRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
