@@ -115,7 +115,7 @@ function SignUp() {
       joinedAt: new Date().toISOString(),
     });
     speak("Welcome to Outbound Fitness. Your journey starts here.");
-    navigate({ to: "/dashboard", search: { welcome: true } });
+    navigate({ to: "/dashboard" });
   };
 
   return (
